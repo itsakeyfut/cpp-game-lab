@@ -16,7 +16,9 @@ cpp-game-lab/
 ├── README.md                   # ビルド手順
 ├── cmake/                      # 共通 CMake 関数
 │   ├── CompilerWarnings.cmake  #   警告設定
-│   └── ProjectOptions.cmake    #   C++23、-fno-exceptions、サニタイザ等
+│   ├── ProjectOptions.cmake    #   C++23、-fno-exceptions、サニタイザ、UTF-8 コードページ等
+│   └── windows/
+│       └── utf8.manifest       #   Windows の実行ファイルを UTF-8 コードページで動かす（ADR-0016）
 ├── docs/                       # リポジトリ全体の文書（本ファイルなど）
 │   └── adr/                    #   全体に関わる決定記録
 ├── engine/                     # 全題材で共有するモジュール（UE の Engine/ に相当）

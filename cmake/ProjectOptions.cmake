@@ -37,6 +37,14 @@ function(cgl_disable_exceptions target)
     endif()
 endfunction()
 
+# Windows の実行ファイルで、ANSI コードページ（argv や fopen などの char 版 API）を UTF-8 にする
+# （docs/adr/0016-utf8-code-page-on-windows.md）。他の OS では何もしない
+function(cgl_use_utf8_code_page target)
+    if(WIN32)
+        target_sources(${target} PRIVATE "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/utf8.manifest")
+    endif()
+endfunction()
+
 # テスト用ターゲットの設定（Catch2 が例外を使うため例外は有効のまま。clang-tidy は対象外）
 function(cgl_configure_test_target target)
     set_target_properties(${target} PROPERTIES
@@ -45,4 +53,6 @@ function(cgl_configure_test_target target)
         CXX_EXTENSIONS OFF
     )
     cgl_set_warnings(${target})
+    # CTest は日本語のテスト名をコマンドライン引数で渡すため、argv を UTF-8 で受け取る必要がある
+    cgl_use_utf8_code_page(${target})
 endfunction()
