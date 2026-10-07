@@ -7,7 +7,7 @@
 | [repository-structure.md](repository-structure.md) | ディレクトリ構成・モジュール・依存のルール・名前空間 |
 | [coding-style.md](coding-style.md) | コーディング規約（命名・ファイル・設計の原則・テスト） |
 | [error-handling.md](error-handling.md) | エラー処理の方針（Result / Option / アサート） |
-| [git-workflow.md](git-workflow.md) | ブランチ・コミット・タグ・CI |
+| [git-workflow.md](git-workflow.md) | Issue・ラベル・ブランチ・コミット・PR・マイルストーン・CI |
 | [ue-mapping.md](ue-mapping.md) | 本プロジェクトの概念と Unreal Engine の対応表 |
 | [adr/](adr/README.md) | 決定記録（ADR）: リポジトリ全体に関わる決定と、その理由・検討した選択肢 |
 

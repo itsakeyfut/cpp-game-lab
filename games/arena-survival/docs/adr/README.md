@@ -6,4 +6,4 @@
 |---|----------|------|------|
 | [0001](0001-entity-representation-value-arrays.md) | エンティティは部品の集約 + 値の配列で表す（ECS を使わない） | 承認 | 2026-10-07 |
 | [0002](0002-sim-state-input-and-pipeline.md) | sim の状態・入力・処理パイプラインの形 | 承認 | 2026-10-07 |
-| [0003](0003-milestones-and-late-data-driven.md) | マイルストーンとデータ駆動化の時期 | 承認 | 2026-10-07 |
+| [0003](0003-milestones-and-late-data-driven.md) | マイルストーンとデータ駆動化の時期 | 承認（タグは全体の ADR-0018 により廃止） | 2026-10-07 |

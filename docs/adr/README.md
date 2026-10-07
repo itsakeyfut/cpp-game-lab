@@ -23,8 +23,9 @@
 | [0010](0010-json-with-glaze.md) | ゲームデータは JSON + glaze | 承認 | 2026-10-07 |
 | [0011](0011-naming-conventions.md) | 命名規則 | 承認 | 2026-10-07 |
 | [0012](0012-code-quality-tools.md) | コード品質ツール | 承認 | 2026-10-07 |
-| [0013](0013-git-workflow-and-ci.md) | Git 運用と CI | 承認 | 2026-10-07 |
+| [0013](0013-git-workflow-and-ci.md) | Git 運用と CI | 承認（タグは ADR-0018 により廃止） | 2026-10-07 |
 | [0014](0014-engine-core-scope.md) | `engine::core` の範囲 | 承認 | 2026-10-07 |
 | [0015](0015-public-repo-issues-and-labels.md) | 公開範囲・Issue と PR の流れ・ラベルの体系 | 承認 | 2026-10-07 |
 | [0016](0016-utf8-code-page-on-windows.md) | Windows の実行ファイルは UTF-8 のコードページで動かす | 承認 | 2026-10-07 |
 | [0017](0017-run-asan-in-ci.md) | CI で AddressSanitizer を常に実行する | 承認 | 2026-10-07 |
+| [0018](0018-no-tags-or-versions.md) | タグとバージョン番号を使わない | 承認 | 2026-10-07 |
