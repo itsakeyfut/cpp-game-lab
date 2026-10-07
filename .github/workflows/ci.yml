@@ -57,9 +57,8 @@ jobs:
             autoconf autoconf-archive automake libtool \
             libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev \
             libwayland-dev libxkbcommon-dev wayland-protocols
-          sudo update-alternatives --install /usr/bin/clang clang "/usr/bin/clang-${LLVM_VERSION}" 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ "/usr/bin/clang++-${LLVM_VERSION}" 100
-          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy "/usr/bin/clang-tidy-${LLVM_VERSION}" 100
+          # runner に入っている /usr/bin/clang++（古い版）より優先されるよう、LLVM 20 の bin を PATH の先頭に置く
+          echo "/usr/lib/llvm-${LLVM_VERSION}/bin" >> "$GITHUB_PATH"
 
       - name: ツールをインストール (Windows)
         if: runner.os == 'Windows'
