@@ -20,3 +20,4 @@
 
 ## 結果
 - Windows + clang での AddressSanitizer・UBSan の対応範囲は、立ち上げ時（arena M0）に確認する。
+- 確認結果（arena M0, 2026-10-07）: `asan` プリセットは Windows（clang 20）と Linux（clang 20）で動作する。Windows では、MSVC の標準ライブラリの ASan 用注釈を無効にし（`_DISABLE_STL_ANNOTATION`）、ASan の実行時ライブラリを実行ファイルの隣にコピーする必要があった。CI で常に実行する（[ADR-0017](0017-run-asan-in-ci.md)）。UBSan は未確認。

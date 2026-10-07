@@ -36,11 +36,13 @@ jobs:
         run: git ls-files '*.cpp' '*.hpp' | xargs "clang-format-${LLVM_VERSION}" --dry-run --Werror
 
   build:
-    name: ビルドとテスト (${{ matrix.os }})
+    name: ビルドとテスト (${{ matrix.os }}, ${{ matrix.preset }})
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2025, ubuntu-24.04]
+        # ci: 警告をエラー扱い + clang-tidy、asan: AddressSanitizer（docs/adr/0017-run-asan-in-ci.md）
+        preset: [ci, asan]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -92,16 +94,17 @@ jobs:
         run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
       - name: 構成
-        run: cmake --preset ci
+        run: cmake --preset ${{ matrix.preset }}
 
       - name: ビルド
-        run: cmake --build --preset ci
+        run: cmake --build --preset ${{ matrix.preset }}
 
       - name: テスト
-        run: ctest --preset ci
+        run: ctest --preset ${{ matrix.preset }}
 
+      # 依存ライブラリのビルド結果はプリセットによらず同じため、ci のジョブだけが保存する
       - name: vcpkg のバイナリキャッシュを保存
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.vcpkg-cache.outputs.cache-hit != 'true'
+        if: matrix.preset == 'ci' && github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.vcpkg-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
