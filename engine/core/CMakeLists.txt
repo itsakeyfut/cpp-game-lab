@@ -28,4 +28,15 @@ if(CGL_BUILD_TESTS)
             -DEXE=$<TARGET_FILE:engine_core_assert_failure>
             -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_assert_failure.cmake
     )
+
+    # 検証スクリプト自体の確認: プロセスが固まった場合（ダイアログで止まった場合など）は失敗と判定する
+    add_executable(engine_core_assert_hang tests/assert_hang_main.cpp)
+    cgl_configure_test_target(engine_core_assert_hang)
+    add_test(NAME engine_core_assert_failure_detects_hang
+        COMMAND ${CMAKE_COMMAND}
+            -DEXE=$<TARGET_FILE:engine_core_assert_hang>
+            -DTIMEOUT_SECONDS=2
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_assert_failure.cmake
+    )
+    set_tests_properties(engine_core_assert_failure_detects_hang PROPERTIES WILL_FAIL TRUE)
 endif()

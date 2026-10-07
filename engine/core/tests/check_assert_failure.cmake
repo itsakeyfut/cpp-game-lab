@@ -1,10 +1,17 @@
-# 使い方: cmake -DEXE=<実行ファイル> -P check_assert_failure.cmake
+# 使い方: cmake -DEXE=<実行ファイル> [-DTIMEOUT_SECONDS=<秒>] -P check_assert_failure.cmake
+if(NOT DEFINED TIMEOUT_SECONDS)
+    set(TIMEOUT_SECONDS 10)
+endif()
 execute_process(
     COMMAND "${EXE}"
     RESULT_VARIABLE result
     ERROR_VARIABLE stderrText
-    TIMEOUT 10
+    TIMEOUT ${TIMEOUT_SECONDS}
 )
+# タイムアウトで強制終了された場合も result は "0" 以外になるため、先に判定する
+if(result MATCHES "timeout")
+    message(FATAL_ERROR "${TIMEOUT_SECONDS} 秒以内に終了しなかった（ダイアログなどで止まっている可能性がある）: ${result}")
+endif()
 if(result STREQUAL "0")
     message(FATAL_ERROR "アサート失敗で異常終了するはずが、正常終了した")
 endif()
