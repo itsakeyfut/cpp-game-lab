@@ -28,3 +28,4 @@
 - UE との対応: アサート ↔ `check()` / `checkf()`、`std::expected` ↔ `TValueOrError`。
 - `-fno-exceptions` と MSVC 標準ライブラリの組み合わせでの動作は、立ち上げ時（arena M0）に確認する。
 - JSON パーサの選択に影響した（[ADR-0010](0010-json-with-glaze.md)）。
+- 確認結果（arena M0, 2026-10-07）: `-fno-exceptions` + `_HAS_EXCEPTIONS=0` でビルドした `engine_core` を、例外有効のテスト実行ファイルにリンクして、Windows（clang 20 + MSVC 標準ライブラリ、Debug / Release）と Linux（clang 20 + libstdc++、CI）で動作することを確認した。
