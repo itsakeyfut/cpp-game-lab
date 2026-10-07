@@ -1,14 +1,50 @@
 # Git 運用
 
-決定の理由は [ADR-0013](adr/0013-git-workflow-and-ci.md) を参照。
+決定の理由は [ADR-0013](adr/0013-git-workflow-and-ci.md)、[ADR-0015](adr/0015-public-repo-issues-and-labels.md) を参照。
 
-## 1. ブランチ
+## 1. リポジトリ
+- GitHub の Public リポジトリ。ライセンスは当面付けない。
+- 秘密情報はコミットしない。個人用の作業ファイルは `.gitignore`、個人の環境固有の除外は `.git/info/exclude`（コミットされない）に書く。
+
+## 2. 作業の流れ
+```
+Issue を起票 → 作業ブランチを作る → 実装・ビルド・テスト → PR を出す → 所有者がマージ → 次の Issue へ
+```
+- 作業ごとに Issue を起票する。Issue には「目的・作業内容・完了条件・参照」を書く。
+- まとまった目標（マイルストーンなど）は親 Issue（`T-Tracking-Issue`）を作り、作業を子 Issue（GitHub の sub-issues）に分ける。子 Issue がすべて閉じたら親を閉じる。
+- 1 Issue = 1 作業ブランチ = 1 PR。
+- PR の説明に `Closes #<番号>` を書き、マージ時に Issue が閉じるようにする。
+- **マージはリポジトリの所有者が行う。** 作業者は PR を出したら止まり、マージ後に `main` を取り込んでから次の Issue に進む。
+
+## 3. ラベル
+接頭辞ごとに 1 つずつ付ける（`A-` は複数可）。
+
+| 接頭辞 | 分類 | ラベル | 付け方 |
+|--------|------|--------|--------|
+| `S-` | 状態 | `Needs-Design` | 実装の前に設計が必要 |
+| | | `Ready-For-Implementation` | 設計が固まり、完了条件を確認できる。着手できる |
+| | | `In-Progress` | 作業中 |
+| | | `Blocked` | まだ実装できず、調べている実験もない |
+| | | `Experimenting` | 止まっているが、原因を確かめる実験を進めている |
+| `T-` | 種類 | `Feat` / `Bug` / `Doc` / `Maintenance` / `Perf` | 機能 / 不具合 / 文書・ADR / 振る舞いを変えない整理 / 計測に基づく性能改善 |
+| | | `Experiment` | 使い捨てのブランチで試して答えを出す問い |
+| | | `Tracking-Issue` | 親 Issue |
+| `A-` | 領域 | `engine-core` / `arena-sim` / `arena-content` / `arena-app` | CMake のモジュール単位 |
+| | | `build` / `ci` / `docs` | CMake・vcpkg・品質ツール / GitHub Actions / 文書 |
+| `D-` | 難しさ | `Trivial` / `Straightforward` / `Modest` / `Complex` | 機械的 / やり方が 1 つ / 多少の設計 / 本格的な調査が要る |
+| | | `Cpp-Semantics` | C++ の規格の定めで答えが決まる。規格の該当箇所を示す |
+| `P-` | 優先度 | `Critical` | ビルドできない・起動しない・決定論が壊れる。最優先 |
+| | | `High` / `Medium` / `Low` | 他の Issue が待っている / 標準 / 後回しでよい |
+
+題材やモジュールを追加したら、`A-<題材の短縮名>-<module>` のラベルを追加する。
+
+## 4. ブランチ
 - `main`: 常にビルドとテストが通る状態を保つ。直接コミットしない。
-- 作業ブランチ: `<種類>/<スコープ>-<内容>` の形で作り、短期間でプルリクエストにして `main` に取り込む。
-  - 例: `feat/arena-wave-spawner`、`refactor/engine-error-context`、`build/ci-linux`
+- 作業ブランチ: `<種類>/<スコープ>-<内容>` の形で作り、短期間でプルリクエストにして `main` に取り込む。スコープがない（リポジトリ全体の）場合は `<種類>/<内容>`。
+  - 例: `feat/arena-wave-spawner`、`refactor/engine-error-context`、`build/ci-linux`、`docs/repo-operations`
 - プルリクエストの説明に「何を・なぜ変えたか」を書く。変遷を追うための記録になる。
 
-## 2. コミットメッセージ
+## 5. コミットメッセージ
 [Conventional Commits](https://www.conventionalcommits.org/) にスコープを付ける。
 ```
 <種類>(<スコープ>): <要約>
@@ -44,16 +80,16 @@ build: vcpkg に glaze を追加
 
 題材ごとに履歴を絞り込む: `git log --grep="(arena)"`
 
-## 3. コミットの粒度
+## 6. コミットの粒度
 - 1 コミット = 1 つの意図。
 - 各コミットでビルドとテストが通ること。
 
-## 4. タグ
+## 7. タグ
 題材ごとのマイルストーンで `<題材>/vX.Y.Z` を付ける。
 - 例: `arena-survival/v0.0.1`（立ち上げ）、`arena-survival/v1.0.0`
 - 「この時点の構成」を `git checkout arena-survival/v0.3.0` で丸ごと取り出せる。
 
-## 5. CI（GitHub Actions）
+## 8. CI（GitHub Actions）
 | ジョブ | 内容 |
 |--------|------|
 | ビルド・テスト | Windows（clang）と Linux（clang）で `ci` プリセットを使い、全題材をビルドしてテストする |
