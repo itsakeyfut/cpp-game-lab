@@ -20,13 +20,13 @@ template <class T>
 using Result = std::expected<T, Error>;
 
 // 呼び出し位置を記録した Error を作る
-[[nodiscard]] Error MakeError(std::string message,
-                              std::source_location location = std::source_location::current());
+[[nodiscard]] Error MakeError(std::string message, std::source_location location = std::source_location::current());
 
 // transform_error に渡す関数オブジェクトを返す。失敗時のエラーに文脈を追加する
 [[nodiscard]] inline auto WithContext(std::string description)
 {
-    return [description = std::move(description)](Error error) -> Error {
+    return [description = std::move(description)](Error error) -> Error
+    {
         error.context.push_back(description);
         return error;
     };
