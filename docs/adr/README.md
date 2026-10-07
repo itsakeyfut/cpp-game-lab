@@ -25,3 +25,4 @@
 | [0012](0012-code-quality-tools.md) | コード品質ツール | 承認 | 2026-10-07 |
 | [0013](0013-git-workflow-and-ci.md) | Git 運用と CI | 承認 | 2026-10-07 |
 | [0014](0014-engine-core-scope.md) | `engine::core` の範囲 | 承認 | 2026-10-07 |
+| [0015](0015-public-repo-issues-and-labels.md) | 公開範囲・Issue と PR の流れ・ラベルの体系 | 承認 | 2026-10-07 |
