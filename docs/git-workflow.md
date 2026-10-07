@@ -42,7 +42,14 @@ Issue を起票 → 作業ブランチを作る → 実装・ビルド・テス�
 - `main`: 常にビルドとテストが通る状態を保つ。直接コミットしない。
 - 作業ブランチ: `<種類>/<スコープ>-<内容>` の形で作り、短期間でプルリクエストにして `main` に取り込む。スコープがない（リポジトリ全体の）場合は `<種類>/<内容>`。
   - 例: `feat/arena-wave-spawner`、`refactor/engine-error-context`、`build/ci-linux`、`docs/repo-operations`
-- プルリクエストの説明に「何を・なぜ変えたか」を書く。変遷を追うための記録になる。
+- プルリクエストの説明は次の形式で書く（`.github/pull_request_template.md`）。変遷を追うための記録になる。
+
+| 節 | 書くこと |
+|----|----------|
+| 先頭 | `Closes #<番号>` |
+| `Objective` | 何のための変更か。解決する問題・満たす要件。関連する ADR・設計書 |
+| `Solution` | どう変えたか。主な変更点とその理由。採らなかった案があればそれも |
+| `Verification` | どう確かめたか。実行したコマンドと結果、手動で確認したこと |
 
 ## 5. コミットメッセージ
 [Conventional Commits](https://www.conventionalcommits.org/) にスコープを付ける。
