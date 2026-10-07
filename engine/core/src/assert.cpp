@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <print>
 #include <string_view>
 
 #if defined(_WIN32)
@@ -12,21 +13,10 @@
 
 namespace engine::core::detail
 {
-namespace
-{
-void WriteToStderr(std::string_view text)
-{
-    std::fwrite(text.data(), 1, text.size(), stderr);
-}
-} // namespace
-
 void AssertionFailed(std::string_view expression, std::string_view message, std::source_location location)
 {
-    WriteToStderr("ENGINE_ASSERT failed: ");
-    WriteToStderr(expression);
-    WriteToStderr("\n  message: ");
-    WriteToStderr(message);
-    std::fprintf(stderr, "\n  at %s:%u\n", location.file_name(), static_cast<unsigned>(location.line()));
+    std::println(stderr, "ENGINE_ASSERT failed: {}\n  message: {}\n  at {}:{}", expression, message,
+                 location.file_name(), location.line());
     std::fflush(stderr);
 
 #if defined(_WIN32)
