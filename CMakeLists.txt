@@ -20,6 +20,19 @@ option(CGL_ENABLE_ASAN "AddressSanitizer を有効にする" OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ProjectOptions)
 
+find_package(raylib CONFIG REQUIRED)
+# vcpkg の raylib（6.0）は静的ライブラリの依存（glfw と OS のライブラリ）を伝播しないため、ここで補う
+find_package(glfw3 CONFIG REQUIRED)
+if(WIN32)
+    set_property(TARGET raylib APPEND PROPERTY INTERFACE_LINK_LIBRARIES glfw opengl32 winmm)
+else()
+    find_package(OpenGL REQUIRED)
+    find_package(Threads REQUIRED)
+    set_property(TARGET raylib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        glfw OpenGL::GL Threads::Threads ${CMAKE_DL_LIBS} m
+    )
+endif()
+
 if(CGL_BUILD_TESTS)
     enable_testing()
     find_package(Catch2 3 CONFIG REQUIRED)
