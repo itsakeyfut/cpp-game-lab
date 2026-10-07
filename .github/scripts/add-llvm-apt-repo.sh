@@ -12,13 +12,17 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "${tmp}"' EXIT
 
 curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key -o "${tmp}/llvm.asc"
-actual="$(gpg --show-keys --with-colons "${tmp}/llvm.asc" | awk -F: '$1 == "fpr" { print $10; exit }')"
-if [[ "${actual}" != "${LLVM_KEY_FINGERPRINT}" ]]; then
-    echo "LLVM の署名鍵のフィンガープリントが一致しない: ${actual}" >&2
+
+# 一時的なキーリングに取り込み、期待するフィンガープリントの鍵だけを書き出す。
+# ファイルに別の鍵が含まれていても、それは登録しない
+export GNUPGHOME="${tmp}/gnupg"
+mkdir -m 700 "${GNUPGHOME}"
+gpg --batch --quiet --import "${tmp}/llvm.asc"
+if ! gpg --batch --list-keys --with-colons "${LLVM_KEY_FINGERPRINT}" | grep -q "^fpr:::::::::${LLVM_KEY_FINGERPRINT}:"; then
+    echo "期待するフィンガープリントの LLVM の署名鍵が見つからない: ${LLVM_KEY_FINGERPRINT}" >&2
     exit 1
 fi
-
-gpg --dearmor < "${tmp}/llvm.asc" | sudo tee "${keyring}" > /dev/null
+gpg --batch --export "${LLVM_KEY_FINGERPRINT}" | sudo tee "${keyring}" > /dev/null
 echo "deb [signed-by=${keyring}] https://apt.llvm.org/${codename}/ llvm-toolchain-${codename}-${LLVM_VERSION} main" \
     | sudo tee "/etc/apt/sources.list.d/llvm-${LLVM_VERSION}.list" > /dev/null
 sudo apt-get update
