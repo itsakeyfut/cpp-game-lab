@@ -51,8 +51,10 @@ vcpkg_installed/
 # ============================================================
 # クラッシュダンプ
 *.dmp
+# Linux のコアダンプ（core / core.<PID>）。ファイルのみを対象にし、engine/core などのディレクトリは除外しない
 core
-core.*
+!core/
+core.[0-9]*
 # カバレッジ・プロファイル（LLVM / GCC）
 *.profraw
 *.profdata
