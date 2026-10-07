@@ -101,7 +101,14 @@ build: vcpkg に glaze を追加
 |--------|------|
 | ビルド・テスト | Windows（clang）と Linux（clang）で `ci` プリセットを使い、全題材をビルドしてテストする |
 | 整形チェック | clang-format の差分がないこと |
-| 静的解析 | clang-tidy の警告がないこと |
+| 静的解析 | clang-tidy の警告がないこと（`ci` プリセットのビルドで実行） |
+| AddressSanitizer | Windows と Linux で `asan` プリセットを使い、全題材をビルドしてテストする（[ADR-0017](adr/0017-run-asan-in-ci.md)） |
 | ベンチマーク | 性能目標の確認（アリーナ・サバイバル M7 以降） |
 
 共有部品（`engine/`）の変更で古い題材が壊れた場合に即座に分かるよう、常に全題材をビルドする。
+
+ワークフローの安全のため、次を守る。
+- `GITHUB_TOKEN` の権限は `contents: read` のみ。
+- Actions はコミットの SHA で固定し、コメントにバージョンを書く。
+- 外部のスクリプトを取得してそのまま実行しない。apt リポジトリは署名鍵のフィンガープリントを照合して登録する（`.github/scripts/add-llvm-apt-repo.sh`）。
+- vcpkg のバイナリキャッシュは `main` への push でのみ保存し、PR では復元のみ。
