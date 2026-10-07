@@ -300,17 +300,19 @@ Result<GameConfig> ParseGameConfig(std::string_view json);             // 純粋
 
 ## 12. マイルストーン
 
-[arena ADR-0003](adr/0003-milestones-and-late-data-driven.md)
+[arena ADR-0003](adr/0003-milestones-and-late-data-driven.md)、[ADR-0018](../../../docs/adr/0018-no-tags-or-versions.md)
 
-| # | 内容 | タグ |
-|---|------|------|
-| M0 | 立ち上げ: CMake / プリセット / vcpkg / 品質ツール / CI / `engine::core` / raylib の空ウィンドウ / テスト 1 本 | `arena-survival/v0.0.1` |
-| M1 | プレイヤーが動く: `Step` / `InputFrame` / 固定タイムステップ / 描画 | `arena-survival/v0.1.0` |
-| M2 | 射撃と弾 | `arena-survival/v0.2.0` |
-| M3 | 突撃型の敵・当たり判定・HP・撃破・スコア | `arena-survival/v0.3.0` |
-| M4 | ウェーブ・タイトル / ゲームオーバー / リスタート | `arena-survival/v0.4.0` |
-| M5 | データ駆動化（JSON → `GameConfig`） | `arena-survival/v0.5.0` |
-| M6 | 射撃型の敵・アイテム | `arena-survival/v0.6.0` |
-| M7 | ベンチマーク・空間グリッド | `arena-survival/v1.0.0` |
+マイルストーンごとに親 Issue を作って管理する（タグは付けない）。
+
+| # | 内容 |
+|---|------|
+| M0 | 立ち上げ: CMake / プリセット / vcpkg / 品質ツール / CI / `engine::core` / raylib の空ウィンドウ / テスト 1 本 |
+| M1 | プレイヤーが動く: `Step` / `InputFrame` / 固定タイムステップ / 描画 |
+| M2 | 射撃と弾 |
+| M3 | 突撃型の敵・当たり判定・HP・撃破・スコア |
+| M4 | ウェーブ・タイトル / ゲームオーバー / リスタート |
+| M5 | データ駆動化（JSON → `GameConfig`） |
+| M6 | 射撃型の敵・アイテム |
+| M7 | ベンチマーク・空間グリッド |
 
 各マイルストーンで設計書と実装がずれた場合は本書を更新し、重要な変更は新しい ADR として記録する。

@@ -7,7 +7,6 @@ if(CMAKE_HOST_WIN32 AND NOT DEFINED VCPKG_TARGET_TRIPLET)
 endif()
 
 project(cpp-game-lab
-    VERSION 0.0.1
     DESCRIPTION "ゲームエンジンを使わずに C++ で作る題材別のゲーム"
     LANGUAGES C CXX
 )

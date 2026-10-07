@@ -1,6 +1,6 @@
 # Git 運用
 
-決定の理由は [ADR-0013](adr/0013-git-workflow-and-ci.md)、[ADR-0015](adr/0015-public-repo-issues-and-labels.md) を参照。
+決定の理由は [ADR-0013](adr/0013-git-workflow-and-ci.md)、[ADR-0015](adr/0015-public-repo-issues-and-labels.md)、[ADR-0018](adr/0018-no-tags-or-versions.md) を参照。
 
 ## 1. リポジトリ
 - GitHub の Public リポジトリ。ライセンスは当面付けない。
@@ -91,10 +91,10 @@ build: vcpkg に glaze を追加
 - 1 コミット = 1 つの意図。
 - 各コミットでビルドとテストが通ること。
 
-## 7. タグ
-題材ごとのマイルストーンで `<題材>/vX.Y.Z` を付ける。
-- 例: `arena-survival/v0.0.1`（立ち上げ）、`arena-survival/v1.0.0`
-- 「この時点の構成」を `git checkout arena-survival/v0.3.0` で丸ごと取り出せる。
+## 7. マイルストーン
+タグとバージョン番号は使わない（[ADR-0018](adr/0018-no-tags-or-versions.md)）。
+- マイルストーンは親 Issue（`T-Tracking-Issue`）で管理する。
+- マイルストーンの区切りは、親 Issue が閉じた時点の `main` のコミット。親 Issue を閉じるときに、そのコミットをコメントに書く。
 
 ## 8. CI（GitHub Actions）
 | ジョブ | 内容 |
