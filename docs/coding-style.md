@@ -83,4 +83,5 @@ UE の型接頭辞（`F` / `U` / `A` / `E` / `T`）や bool の `b` は付けな
 [ADR-0008](adr/0008-catch2-for-testing.md)
 - テストは各モジュールの `tests/` に置き、ファイル名は `<対象>_test.cpp`。
 - Catch2 v3 を使う。`TEST_CASE` 名は「対象: 期待する振る舞い」の形で書く（例: `"ApplyDamage: HP は 0 未満にならない"`）。
+- テストの実行ファイルは `cgl_configure_test_target` で設定する。Windows では UTF-8 コードページで動くため、日本語のテスト名を CTest で個別に実行できる（[ADR-0016](adr/0016-utf8-code-page-on-windows.md)）。
 - sim の機能はテストを先に書く。
