@@ -5,22 +5,35 @@ on:
     branches: [main]
   pull_request:
 
+# GITHUB_TOKEN の権限はリポジトリの読み取りのみ
+permissions:
+  contents: read
+
 env:
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-cache
+  # apt.llvm.org の署名鍵のフィンガープリント（https://apt.llvm.org/ に掲載）
+  LLVM_KEY_FINGERPRINT: 6084F3CF814B57C1CF12EFD515CF4D18AF4F7421
+  LLVM_VERSION: 20
 
 jobs:
   format:
     name: 整形チェック
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - name: clang-format 20 をインストール
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: LLVM の apt リポジトリを登録
+        run: .github/scripts/add-llvm-apt-repo.sh
+
+      - name: clang-format をインストール
         run: |
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 20
-          sudo apt-get install -y clang-format-20
-          clang-format-20 --version
+          sudo apt-get install -y "clang-format-${LLVM_VERSION}"
+          "clang-format-${LLVM_VERSION}" --version
+
       - name: 整形を確認
-        run: git ls-files '*.cpp' '*.hpp' | xargs clang-format-20 --dry-run --Werror
+        run: git ls-files '*.cpp' '*.hpp' | xargs "clang-format-${LLVM_VERSION}" --dry-run --Werror
 
   build:
     name: ビルドとテスト (${{ matrix.os }})
@@ -30,20 +43,25 @@ jobs:
         os: [windows-2025, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: LLVM 20 をインストール (Linux)
+      - name: ツールをインストール (Linux)
         if: runner.os == 'Linux'
         run: |
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 20
-          sudo apt-get install -y clang-tidy-20 ninja-build pkg-config \
+          .github/scripts/add-llvm-apt-repo.sh
+          # raylib → glfw の X11 / Wayland 依存と、vcpkg が autotools でビルドする依存（pthread-stubs など）
+          sudo apt-get install -y \
+            "clang-${LLVM_VERSION}" "clang-tidy-${LLVM_VERSION}" ninja-build pkg-config \
+            autoconf autoconf-archive automake libtool \
             libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev \
             libwayland-dev libxkbcommon-dev wayland-protocols
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
-          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-20 100
+          sudo update-alternatives --install /usr/bin/clang clang "/usr/bin/clang-${LLVM_VERSION}" 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ "/usr/bin/clang++-${LLVM_VERSION}" 100
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy "/usr/bin/clang-tidy-${LLVM_VERSION}" 100
 
-      - name: LLVM 20 をインストール (Windows)
+      - name: ツールをインストール (Windows)
         if: runner.os == 'Windows'
         run: |
           choco install llvm --version=20.1.8 --allow-downgrade -y --no-progress
@@ -61,8 +79,10 @@ jobs:
         shell: bash
         run: echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> "$GITHUB_ENV"
 
-      - name: vcpkg のバイナリキャッシュ
-        uses: actions/cache@v6
+      # キャッシュは main への push でのみ保存する。PR からは復元のみ（キャッシュの改ざんを防ぐ）
+      - name: vcpkg のバイナリキャッシュを復元
+        id: vcpkg-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-${{ matrix.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
@@ -80,3 +100,10 @@ jobs:
 
       - name: テスト
         run: ctest --preset ci
+
+      - name: vcpkg のバイナリキャッシュを保存
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ matrix.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
